@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damage Reports - Asset Management System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            padding: 10px 20px;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .nav-links i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h2 {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-footer {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: var(--secondary-color);
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-reported {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-under-review {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .status-repair-scheduled {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .status-repair-in-progress {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .status-resolved {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-unrepairable {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .severity {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .severity-low {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .severity-medium {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .severity-high {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .severity-critical {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 800px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        /* Damage Report Details */
+        .damage-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: var(--dark-color);
+        }
+
+        .user-info-card, .asset-info-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .damage-info-card {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Image Upload */
+        .image-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+            border-left: 2px solid #e0e0e0;
+            padding-left: 15px;
+        }
+
+        .timeline-date {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            color: var(--dark-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .damage-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Asset Management</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i>📊</i> Dashboard</a></li>
+                <li><a href="users.html"><i>👥</i> Users</a></li>
+                <li><a href="assets.html"><i>💻</i> Assets</a></li>
+                <li><a href="faculty.html"><i>🏛️</i> Faculty</a></li>
+                <li><a href="borrow-requests.html"><i>📋</i> Borrow Requests</a></li>
+                <li><a href="transactions.html"><i>🔄</i> Transactions</a></li>
+                <li><a href="distribution.html"><i>📦</i> Distribution</a></li>
+                <li><a href="#" class="active"><i>⚠️</i> Damage Reports</a></li>
+                <li><a href="repairs.html"><i>🔧</i> Repairs</a></li>
+                <li><a href="maintenance.html"><i>📅</i> Maintenance</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Damage Report Management</h2>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <div>John Doe</div>
+                        <div style="font-size: 0.8rem; color: #6c757d;">Administrator</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card" onclick="filterByStatus('')">
+                    <div class="card-header">
+                        <div class="card-title">Total Reports</div>
+                        <div class="card-icon" style="background-color: var(--primary-color);">⚠️</div>
+                    </div>
+                    <div class="card-value">34</div>
+                    <div class="card-footer">All damage reports</div>
+                </div>
+                <div class="card" onclick="filterByStatus('reported')">
+                    <div class="card-header">
+                        <div class="card-title">New Reports</div>
+                        <div class="card-icon" style="background-color: var(--warning-color);">📝</div>
+                    </div>
+                    <div class="card-value">8</div>
+                    <div class="card-footer">Awaiting review</div>
+                </div>
+                <div class="card" onclick="filterByStatus('repair-in-progress')">
+                    <div class="card-header">
+                        <div class="card-title">Under Repair</div>
+                        <div class="card-icon" style="background-color: var(--primary-color);">🔧</div>
+                    </div>
+                    <div class="card-value">12</div>
+                    <div class="card-footer">Currently being repaired</div>
+                </div>
+                <div class="card" onclick="filterBySeverity('high')">
+                    <div class="card-header">
+                        <div class="card-title">Critical Damage</div>
+                        <div class="card-icon" style="background-color: var(--danger-color);">🚨</div>
+                    </div>
+                    <div class="card-value">5</div>
+                    <div class="card-footer">High severity issues</div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search reports by asset, user, or description...">
+                </div>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="reported">Reported</option>
+                    <option value="under-review">Under Review</option>
+                    <option value="repair-scheduled">Repair Scheduled</option>
+                    <option value="repair-in-progress">Repair in Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="unrepairable">Unrepairable</option>
+                </select>
+                <select class="filter-select" id="severityFilter">
+                    <option value="">All Severity</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                </select>
+            </div>
+
+            <!-- Damage Reports Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">All Damage Reports</div>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="openNewReportModal()">New Report</button>
+                        <button class="btn btn-secondary">Export</button>
+                        <button class="btn btn-warning" onclick="viewDamageReport()">Generate Report</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Asset</th>
+                            <th>Reported By</th>
+                            <th>Damage Description</th>
+                            <th>Severity</th>
+                            <th>Report Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody">
+                        <!-- Reports will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- New Damage Report Form -->
+            <div class="form-container">
+                <h3 style="margin-bottom: 20px; color: var(--secondary-color);">Create New Damage Report</h3>
+                <form id="damageReportForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="assetId">Select Asset</label>
+                                <select id="assetId" name="assetId" required>
+                                    <option value="">Select Asset</option>
+                                    <option value="1">Laptop Dell XPS 13 (Currently Borrowed)</option>
+                                    <option value="2">Projector Epson EB-U05 (Available)</option>
+                                    <option value="3">Tablet iPad Pro (Under Maintenance)</option>
+                                    <option value="4">Monitor LG 27UL850 (Available)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="userId">Reported By</label>
+                                <select id="userId" name="userId" required>
+                                    <option value="">Select User</option>
+                                    <option value="1">John Doe (Engineering)</option>
+                                    <option value="2">Jane Smith (Medicine)</option>
+                                    <option value="3">Robert Johnson (Business)</option>
+                                    <option value="4">Emily Davis (Arts)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="severity">Damage Severity</label>
+                                <select id="severity" name="severity" required>
+                                    <option value="">Select Severity</option>
+                                    <option value="low">Low - Minor cosmetic damage</option>
+                                    <option value="medium">Medium - Functional but impaired</option>
+                                    <option value="high">High - Major functional issues</option>
+                                    <option value="critical">Critical - Complete failure</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="reportDate">Report Date</label>
+                                <input type="datetime-local" id="reportDate" name="reportDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="damageDescription">Damage Description</label>
+                        <textarea id="damageDescription" name="damageDescription" rows="4" placeholder="Please provide detailed description of the damage, including how it occurred and current condition..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Damage Evidence (Photos)</label>
+                        <div class="image-upload" onclick="document.getElementById('imageUpload').click()">
+                            <div class="upload-icon">📷</div>
+                            <div>Click to upload damage photos</div>
+                            <div style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">Supports JPG, PNG (Max 5MB each)</div>
+                        </div>
+                        <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
+                        <div class="image-preview" id="imagePreview">
+                            <!-- Image previews will be added here -->
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <button type="submit" class="btn btn-primary">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Report Modal -->
+    <div class="modal" id="newReportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Create New Damage Report</div>
+                <button class="modal-close" onclick="closeNewReportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="modalReportForm">
+                    <div class="form-group">
+                        <label for="modalAssetId">Select Asset</label>
+                        <select id="modalAssetId" name="modalAssetId" required>
+                            <option value="">Select Asset</option>
+                            <option value="1">Laptop Dell XPS 13 (Currently Borrowed)</option>
+                            <option value="2">Projector Epson EB-U05 (Available)</option>
+                            <option value="3">Tablet iPad Pro (Under Maintenance)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalUserId">Reported By</label>
+                        <select id="modalUserId" name="modalUserId" required>
+                            <option value="">Select User</option>
+                            <option value="1">John Doe (Engineering)</option>
+                            <option value="2">Jane Smith (Medicine)</option>
+                            <option value="3">Robert Johnson (Business)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalSeverity">Damage Severity</label>
+                        <select id="modalSeverity" name="modalSeverity" required>
+                            <option value="">Select Severity</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalDamageDescription">Damage Description</label>
+                        <textarea id="modalDamageDescription" name="modalDamageDescription" rows="4" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewReportModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitReportForm()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Damage Report Details Modal -->
+    <div class="modal" id="reportDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Damage Report Details</div>
+                <button class="modal-close" onclick="closeReportDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="damage-details">
+                    <div>
+                        <div class="detail-group">
+                            <div class="detail-label">Report ID</div>
+                            <div class="detail-value" id="detailReportId">DAM-001</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Report Date</div>
+                            <div class="detail-value" id="detailReportDate">2024-02-20 14:30</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Severity</div>
+                            <div class="detail-value">
+                                <span class="severity severity-high" id="detailSeverity">High</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value">
+                                <span class="status status-under-review" id="detailStatus">Under Review</span>
+                            </div>
+                        </div>
+                        <div class="user-info-card">
+                            <div class="detail-label" style="color: var(--primary-color); margin-bottom: 10px;">Reporter Information</div>
+                            <div class="detail-group">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value" id="detailUserName">John Doe</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Department</div>
+                                <div class="detail-value" id="detailUserDepartment">Faculty of Engineering</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value" id="detailUserEmail">john.doe@university.edu</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="asset-info-card">
+                            <div class="detail-label" style="color: var(--primary-color); margin-bottom: 10px;">Asset Information</div>
+                            <div class="detail-group">
+                                <div class="detail-label">Asset Name</div>
+                                <div class="detail-value" id="detailAssetName">Laptop Dell XPS 13</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Serial Number</div>
+                                <div class="detail-value" id="detailAssetSerial">SN-789456123</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Brand & Model</div>
+                                <div class="detail-value" id="detailAssetModel">Dell XPS 13 9310</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Current Status</div>
+                                <div class="detail-value">
+                                    <span class="status status-maintenance" id="detailAssetStatus">Under Maintenance</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="damage-info-card">
+                            <div class="detail-label" style="color: var(--warning-color); margin-bottom: 10px;">Damage Information</div>
+                            <div class="detail-group">
+                                <div class="detail-label">Damage Description</div>
+                                <div class="detail-value" id="detailDamageDescription" style="background-color: #fff3cd; padding: 10px; border-radius: var(--border-radius);">Screen cracked after accidental drop. Device powers on but display is completely black. No visible damage to casing except for minor scratches.</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Damage Photos</div>
+                                <div class="image-preview">
+                                    <div class="preview-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e9ecef'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236c757d' text-anchor='middle' dominant-baseline='middle'%3EDamage Photo%3C/text%3E%3C/svg%3E" alt="Damage photo">
+                                        <button class="preview-remove">&times;</button>
+                                    </div>
+                                    <div class="preview-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e9ecef'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='12' fill='%236c757d' text-anchor='middle' dominant-baseline='middle'%3EDamage Photo%3C/text%3E%3C/svg%3E" alt="Damage photo">
+                                        <button class="preview-remove">&times;</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline">
+                            <h4 style="margin-bottom: 15px; color: var(--secondary-color);">Report Timeline</h4>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-20 14:30</div>
+                                    <div class="timeline-description">Damage reported by John Doe</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-20 15:15</div>
+                                    <div class="timeline-description">Report assigned for review</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-21 09:00</div>
+                                    <div class="timeline-description">Initial assessment completed</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons" id="actionButtons">
+                            <!-- Action buttons will be populated based on status -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReportDetailsModal()">Close</button>
+                <button class="btn btn-primary" onclick="printDamageReport()">Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample damage report data
+        const damageReports = [
+            {
+                id: 1,
+                assetId: 1,
+                assetName: "Laptop Dell XPS 13",
+                assetSerial: "SN-789456123",
+                assetModel: "Dell XPS 13 9310",
+                assetStatus: "maintenance",
+                userId: 1,
+                userName: "John Doe",
+                userDepartment: "Faculty of Engineering",
+                userEmail: "john.doe@university.edu",
+                damageDescription: "Screen cracked after accidental drop. Device powers on but display is completely black. No visible damage to casing except for minor scratches.",
+                severity: "high",
+                reportDate: "2024-02-20 14:30",
+                status: "under-review"
+            },
+            {
+                id: 2,
+                assetId: 2,
+                assetName: "Projector Epson EB-U05",
+                assetSerial: "SN-456123789",
+                assetModel: "Epson EB-U05",
+                assetStatus: "maintenance",
+                userId: 2,
+                userName: "Jane Smith",
+                userDepartment: "Faculty of Medicine",
+                userEmail: "jane.smith@university.edu",
+                damageDescription: "Overheating issue during extended use. Projector shuts down automatically after 30 minutes of operation. Fan noise is louder than normal.",
+                severity: "medium",
+                reportDate: "2024-02-19 11:15",
+                status: "repair-in-progress"
+            },
+            {
+                id: 3,
+                assetId: 4,
+                assetName: "Monitor LG 27UL850",
+                assetSerial: "SN-987654321",
+                assetModel: "LG 27UL850-W",
+                assetStatus: "available",
+                userId: 3,
+                userName: "Robert Johnson",
+                userDepartment: "Faculty of Business",
+                userEmail: "robert.johnson@university.edu",
+                damageDescription: "Dead pixels in the center of the screen. Approximately 5-6 pixels not functioning properly. Color distortion in affected area.",
+                severity: "low",
+                reportDate: "2024-02-18 16:45",
+                status: "resolved"
+            },
+            {
+                id: 4,
+                assetId: 3,
+                assetName: "Tablet iPad Pro",
+                assetSerial: "SN-123789456",
+                assetModel: "iPad Pro 12.9\"",
+                assetStatus: "maintenance",
+                userId: 4,
+                userName: "Emily Davis",
+                userDepartment: "Faculty of Arts & Sciences",
+                userEmail: "emily.davis@university.edu",
+                damageDescription: "Battery not holding charge. Device shuts down at 40% battery level. Requires constant charging to remain operational.",
+                severity: "critical",
+                reportDate: "2024-02-17 09:20",
+                status: "reported"
+            }
+        ];
+
+        // Initialize the reports table
+        function initializeReportsTable() {
+            const tableBody = document.getElementById('reportsTableBody');
+            tableBody.innerHTML = '';
+            
+            damageReports.forEach(report => {
+                const row = document.createElement('tr');
+                
+                // Determine status and severity classes
+                const statusClass = `status-${report.status.toLowerCase().replace(' ', '-')}`;
+                const severityClass = `severity-${report.severity.toLowerCase()}`;
+                
+                // Shorten damage description for table view
+                const shortDescription = report.damageDescription.length > 80 
+                    ? report.damageDescription.substring(0, 80) + '...' 
+                    : report.damageDescription;
+                
+                row.innerHTML = `
+                    <td>DAM-${report.id.toString().padStart(3, '0')}</td>
+                    <td>${report.assetName}</td>
+                    <td>${report.userName}</td>
+                    <td title="${report.damageDescription}">${shortDescription}</td>
+                    <td><span class="severity ${severityClass}">${report.severity}</span></td>
+                    <td>${new Date(report.reportDate).toLocaleDateString()}</td>
+                    <td><span class="status ${statusClass}">${report.status}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="viewReportDetails(${report.id})">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="editReport(${report.id})">Edit</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Modal functions
+        function openNewReportModal() {
+            document.getElementById('newReportModal').style.display = 'flex';
+        }
+
+        function closeNewReportModal() {
+            document.getElementById('newReportModal').style.display = 'none';
+        }
+
+        function openReportDetailsModal() {
+            document.getElementById('reportDetailsModal').style.display = 'flex';
+        }
+
+        function closeReportDetailsModal() {
+            document.getElementById('reportDetailsModal').style.display = 'none';
+        }
+
+        // Report management functions
+        function submitReportForm() {
+            // Form validation and submission logic would go here
+            alert('Damage report submitted successfully!');
+            closeNewReportModal();
+        }
+
+        function viewReportDetails(reportId) {
+            const report = damageReports.find(r => r.id === reportId);
+            if (report) {
+                document.getElementById('detailReportId').textContent = `DAM-${report.id.toString().padStart(3, '0')}`;
+                document.getElementById('detailReportDate').textContent = report.reportDate;
+                document.getElementById('detailSeverity').textContent = report.severity;
+                document.getElementById('detailSeverity').className = `severity severity-${report.severity.toLowerCase()}`;
+                document.getElementById('detailStatus').textContent = report.status;
+                document.getElementById('detailStatus').className = `status status-${report.status.toLowerCase().replace(' ', '-')}`;
+                document.getElementById('detailUserName').textContent = report.userName;
+                document.getElementById('detailUserDepartment').textContent = report.userDepartment;
+                document.getElementById('detailUserEmail').textContent = report.userEmail;
+                document.getElementById('detailAssetName').textContent = report.assetName;
+                document.getElementById('detailAssetSerial').textContent = report.assetSerial;
+                document.getElementById('detailAssetModel').textContent = report.assetModel;
+                document.getElementById('detailAssetStatus').textContent = 'Under Maintenance';
+                document.getElementById('detailAssetStatus').className = 'status status-maintenance';
+                document.getElementById('detailDamageDescription').textContent = report.damageDescription;
+                
+                // Set action buttons based on status
+                const actionButtons = document.getElementById('actionButtons');
+                actionButtons.innerHTML = '';
+                
+                if (report.status === 'reported') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="assignForReview(${report.id})">Assign for Review</button>
+                        <button class="btn btn-warning" onclick="requestMoreInfo(${report.id})">Request More Info</button>
+                        <button class="btn btn-danger" onclick="rejectReport(${report.id})">Reject Report</button>
+                    `;
+                } else if (report.status === 'under-review') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="scheduleRepair(${report.id})">Schedule Repair</button>
+                        <button class="btn btn-warning" onclick="escalateToVendor(${report.id})">Escalate to Vendor</button>
+                        <button class="btn btn-danger" onclick="markUnrepairable(${report.id})">Mark Unrepairable</button>
+                    `;
+                } else if (report.status === 'repair-in-progress') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="completeRepair(${report.id})">Complete Repair</button>
+                        <button class="btn btn-warning" onclick="updateRepairStatus(${report.id})">Update Status</button>
+                        <button class="btn btn-danger" onclick="cancelRepair(${report.id})">Cancel Repair</button>
+                    `;
+                }
+                
+                openReportDetailsModal();
+            }
+        }
+
+        function editReport(reportId) {
+            const report = damageReports.find(r => r.id === reportId);
+            if (report) {
+                // Populate edit form with report data
+                // This would open an edit modal similar to the add modal
+                alert(`Editing report: DAM-${report.id.toString().padStart(3, '0')}`);
+            }
+        }
+
+        function filterByStatus(status) {
+            document.getElementById('statusFilter').value = status;
+            // Filter logic would be implemented here
+            alert(`Filtering by status: ${status || 'All'}`);
+        }
+
+        function filterBySeverity(severity) {
+            document.getElementById('severityFilter').value = severity;
+            // Filter logic would be implemented here
+            alert(`Filtering by severity: ${severity || 'All'}`);
+        }
+
+        function viewDamageReport() {
+            alert('Generating damage report...');
+            // Report generation logic would go here
+        }
+
+        // Report action functions
+        function assignForReview(reportId) {
+            if (confirm('Are you sure you want to assign this report for technical review?')) {
+                // Assign for review logic would go here
+                alert('Report assigned for technical review!');
+                closeReportDetailsModal();
+            }
+        }
+
+        function requestMoreInfo(reportId) {
+            const info = prompt('What additional information do you need from the reporter?');
+            if (info) {
+                // Request more info logic would go here
+                alert('Information request sent to reporter!');
+            }
+        }
+
+        function rejectReport(reportId) {
+            if (confirm('Are you sure you want to reject this damage report?')) {
+                // Reject report logic would go here
+                alert('Damage report rejected!');
+                closeReportDetailsModal();
+            }
+        }
+
+        function scheduleRepair(reportId) {
+            const date = prompt('Enter repair schedule date (YYYY-MM-DD):');
+            if (date) {
+                // Schedule repair logic would go here
+                alert(`Repair scheduled for ${date}`);
+            }
+        }
+
+        function escalateToVendor(reportId) {
+            if (confirm('Are you sure you want to escalate this to the vendor for warranty claim?')) {
+                // Escalate to vendor logic would go here
+                alert('Issue escalated to vendor!');
+            }
+        }
+
+        function markUnrepairable(reportId) {
+            if (confirm('Are you sure you want to mark this asset as unrepairable?')) {
+                // Mark unrepairable logic would go here
+                alert('Asset marked as unrepairable!');
+                closeReportDetailsModal();
+            }
+        }
+
+        function completeRepair(reportId) {
+            if (confirm('Are you sure you want to mark this repair as complete?')) {
+                // Complete repair logic would go here
+                alert('Repair completed successfully!');
+                closeReportDetailsModal();
+            }
+        }
+
+        function updateRepairStatus(reportId) {
+            const status = prompt('Enter current repair status update:');
+            if (status) {
+                // Update repair status logic would go here
+                alert('Repair status updated!');
+            }
+        }
+
+        function cancelRepair(reportId) {
+            if (confirm('Are you sure you want to cancel this repair?')) {
+                // Cancel repair logic would go here
+                alert('Repair cancelled!');
+                closeReportDetailsModal();
+            }
+        }
+
+        function printDamageReport() {
+            alert('Printing damage report...');
+            // Print functionality would go here
+        }
+
+        // Image upload functionality
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        previewItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <button class="preview-remove" onclick="this.parentElement.remove()">&times;</button>
+                        `;
+                        preview.appendChild(previewItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Form submission handler
+        document.getElementById('damageReportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Form processing logic would go here
+            alert('Damage report submitted successfully!');
+            this.reset();
+            document.getElementById('imagePreview').innerHTML = '';
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // Filter reports based on search term
+            // This would be implemented with actual filtering logic
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const newModal = document.getElementById('newReportModal');
+            const detailsModal = document.getElementById('reportDetailsModal');
+            
+            if (event.target === newModal) {
+                closeNewReportModal();
+            }
+            if (event.target === detailsModal) {
+                closeReportDetailsModal();
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeReportsTable();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Management - Asset Management System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            padding: 10px 20px;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .nav-links i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h2 {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .card-footer {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            color: var(--secondary-color);
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-scheduled {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .status-in-progress {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .status-completed {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-overdue {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-cancelled {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .maintenance-type {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .type-preventive {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .type-corrective {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+
+        .type-predictive {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .type-emergency {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Form Styles */
+        .form-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 800px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-select {
+            min-width: 150px;
+        }
+
+        /* Maintenance Details */
+        .maintenance-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: var(--dark-color);
+        }
+
+        .asset-info-card, .technician-info-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .maintenance-info-card {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Calendar View */
+        .calendar-view {
+            margin: 20px 0;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #e0e0e0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .calendar-day {
+            background-color: white;
+            padding: 10px;
+            min-height: 80px;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day.header {
+            background-color: #f8f9fa;
+            font-weight: 500;
+            text-align: center;
+            padding: 10px 5px;
+        }
+
+        .maintenance-event {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+            cursor: pointer;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Checklist */
+        .checklist {
+            margin-top: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            background-color: #f8f9fa;
+        }
+
+        .checklist-item input {
+            margin-right: 10px;
+            width: auto;
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+            border-left: 2px solid #e0e0e0;
+            padding-left: 15px;
+        }
+
+        .timeline-date {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            color: var(--dark-color);
+        }
+
+        /* Calendar Input */
+        .calendar-input {
+            position: relative;
+        }
+
+        .calendar-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .table-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .maintenance-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Asset Management</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i>📊</i> Dashboard</a></li>
+                <li><a href="users.html"><i>👥</i> Users</a></li>
+                <li><a href="assets.html"><i>💻</i> Assets</a></li>
+                <li><a href="faculty.html"><i>🏛️</i> Faculty</a></li>
+                <li><a href="borrow-requests.html"><i>📋</i> Borrow Requests</a></li>
+                <li><a href="transactions.html"><i>🔄</i> Transactions</a></li>
+                <li><a href="distribution.html"><i>📦</i> Distribution</a></li>
+                <li><a href="damage-reports.html"><i>⚠️</i> Damage Reports</a></li>
+                <li><a href="repairs.html"><i>🔧</i> Repairs</a></li>
+                <li><a href="#" class="active"><i>📅</i> Maintenance</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Maintenance Management</h2>
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <div>John Doe</div>
+                        <div style="font-size: 0.8rem; color: #6c757d;">Administrator</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="card" onclick="filterByStatus('')">
+                    <div class="card-header">
+                        <div class="card-title">Scheduled Maintenance</div>
+                        <div class="card-icon" style="background-color: var(--primary-color);">📅</div>
+                    </div>
+                    <div class="card-value">24</div>
+                    <div class="card-footer">Upcoming maintenance tasks</div>
+                </div>
+                <div class="card" onclick="filterByStatus('overdue')">
+                    <div class="card-header">
+                        <div class="card-title">Overdue Maintenance</div>
+                        <div class="card-icon" style="background-color: var(--danger-color);">⏰</div>
+                    </div>
+                    <div class="card-value">5</div>
+                    <div class="card-footer">Past due maintenance</div>
+                </div>
+                <div class="card" onclick="filterByType('preventive')">
+                    <div class="card-header">
+                        <div class="card-title">Preventive Maintenance</div>
+                        <div class="card-icon" style="background-color: var(--success-color);">🛡️</div>
+                    </div>
+                    <div class="card-value">18</div>
+                    <div class="card-footer">Scheduled preventive tasks</div>
+                </div>
+                <div class="card" onclick="filterByType('corrective')">
+                    <div class="card-header">
+                        <div class="card-title">Corrective Maintenance</div>
+                        <div class="card-icon" style="background-color: var(--warning-color);">🔧</div>
+                    </div>
+                    <div class="card-value">6</div>
+                    <div class="card-footer">Reactive maintenance tasks</div>
+                </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">Maintenance Calendar - February 2024</div>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="openNewMaintenanceModal()">Schedule Maintenance</button>
+                        <button class="btn btn-secondary">Export Calendar</button>
+                        <button class="btn btn-warning" onclick="viewMaintenanceReport()">Generate Report</button>
+                    </div>
+                </div>
+                <div class="calendar-view">
+                    <div class="calendar-grid">
+                        <div class="calendar-day header">Sun</div>
+                        <div class="calendar-day header">Mon</div>
+                        <div class="calendar-day header">Tue</div>
+                        <div class="calendar-day header">Wed</div>
+                        <div class="calendar-day header">Thu</div>
+                        <div class="calendar-day header">Fri</div>
+                        <div class="calendar-day header">Sat</div>
+                        
+                        <!-- Calendar days with maintenance events -->
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2
+                            <div class="maintenance-event" style="background-color: var(--success-color);" onclick="viewMaintenanceDetails(1)">Laptop Maintenance</div>
+                        </div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5
+                            <div class="maintenance-event" style="background-color: var(--warning-color);" onclick="viewMaintenanceDetails(2)">Projector Check</div>
+                        </div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12
+                            <div class="maintenance-event" style="background-color: var(--primary-color);" onclick="viewMaintenanceDetails(3)">Server Maintenance</div>
+                        </div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15
+                            <div class="maintenance-event" style="background-color: var(--danger-color);" onclick="viewMaintenanceDetails(4)">Emergency Repair</div>
+                        </div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search maintenance by asset, technician, or description...">
+                </div>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+                <select class="filter-select" id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="preventive">Preventive</option>
+                    <option value="corrective">Corrective</option>
+                    <option value="predictive">Predictive</option>
+                    <option value="emergency">Emergency</option>
+                </select>
+            </div>
+
+            <!-- Maintenance Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">All Maintenance Tasks</div>
+                    <div class="table-actions">
+                        <button class="btn btn-primary" onclick="openNewMaintenanceModal()">New Maintenance</button>
+                        <button class="btn btn-secondary">Export</button>
+                        <button class="btn btn-warning" onclick="viewMaintenanceReport()">Generate Report</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Schedule ID</th>
+                            <th>Asset</th>
+                            <th>Maintenance Type</th>
+                            <th>Scheduled Date</th>
+                            <th>Technician</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenanceTableBody">
+                        <!-- Maintenance tasks will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- New Maintenance Form -->
+            <div class="form-container">
+                <h3 style="margin-bottom: 20px; color: var(--secondary-color);">Schedule New Maintenance</h3>
+                <form id="maintenanceForm">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="assetId">Select Asset</label>
+                                <select id="assetId" name="assetId" required>
+                                    <option value="">Select Asset</option>
+                                    <option value="1">Laptop Dell XPS 13</option>
+                                    <option value="2">Projector Epson EB-U05</option>
+                                    <option value="3">Tablet iPad Pro</option>
+                                    <option value="4">Monitor LG 27UL850</option>
+                                    <option value="5">Server Dell PowerEdge</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="maintenanceType">Maintenance Type</label>
+                                <select id="maintenanceType" name="maintenanceType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="preventive">Preventive Maintenance</option>
+                                    <option value="corrective">Corrective Maintenance</option>
+                                    <option value="predictive">Predictive Maintenance</option>
+                                    <option value="emergency">Emergency Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="technicianId">Assign Technician</label>
+                                <select id="technicianId" name="technicianId" required>
+                                    <option value="">Select Technician</option>
+                                    <option value="1">Mike Johnson (Hardware Specialist)</option>
+                                    <option value="2">Sarah Chen (Electronics Expert)</option>
+                                    <option value="3">David Kim (Software & Systems)</option>
+                                    <option value="4">Lisa Wong (General Maintenance)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="scheduledDate">Scheduled Date</label>
+                                <div class="calendar-input">
+                                    <input type="date" id="scheduledDate" name="scheduledDate" required>
+                                    <span class="calendar-icon">📅</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="estimatedDuration">Estimated Duration (hours)</label>
+                        <input type="number" id="estimatedDuration" name="estimatedDuration" min="1" max="24" placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label>Maintenance Checklist</label>
+                        <div class="checklist">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="check1" name="checklist">
+                                <label for="check1">Visual inspection for physical damage</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="check2" name="checklist">
+                                <label for="check2">Software updates and patches</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="check3" name="checklist">
+                                <label for="check3">Performance testing and benchmarking</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="check4" name="checklist">
+                                <label for="check4">Cleaning and dust removal</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="check5" name="checklist">
+                                <label for="check5">Backup verification</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenanceNotes">Maintenance Notes</label>
+                        <textarea id="maintenanceNotes" name="maintenanceNotes" rows="4" placeholder="Specific instructions, special requirements, or additional notes..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <button type="submit" class="btn btn-primary">Schedule Maintenance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Maintenance Modal -->
+    <div class="modal" id="newMaintenanceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Schedule New Maintenance</div>
+                <button class="modal-close" onclick="closeNewMaintenanceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="modalMaintenanceForm">
+                    <div class="form-group">
+                        <label for="modalAssetId">Select Asset</label>
+                        <select id="modalAssetId" name="modalAssetId" required>
+                            <option value="">Select Asset</option>
+                            <option value="1">Laptop Dell XPS 13</option>
+                            <option value="2">Projector Epson EB-U05</option>
+                            <option value="3">Tablet iPad Pro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalMaintenanceType">Maintenance Type</label>
+                        <select id="modalMaintenanceType" name="modalMaintenanceType" required>
+                            <option value="">Select Type</option>
+                            <option value="preventive">Preventive Maintenance</option>
+                            <option value="corrective">Corrective Maintenance</option>
+                            <option value="predictive">Predictive Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalTechnicianId">Assign Technician</label>
+                        <select id="modalTechnicianId" name="modalTechnicianId" required>
+                            <option value="">Select Technician</option>
+                            <option value="1">Mike Johnson (Hardware Specialist)</option>
+                            <option value="2">Sarah Chen (Electronics Expert)</option>
+                            <option value="3">David Kim (Software & Systems)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="modalScheduledDate">Scheduled Date</label>
+                                <input type="date" id="modalScheduledDate" name="modalScheduledDate" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="modalEstimatedDuration">Duration (hours)</label>
+                                <input type="number" id="modalEstimatedDuration" name="modalEstimatedDuration" min="1" max="24">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewMaintenanceModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitMaintenanceForm()">Schedule Maintenance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Details Modal -->
+    <div class="modal" id="maintenanceDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Maintenance Task Details</div>
+                <button class="modal-close" onclick="closeMaintenanceDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="maintenance-details">
+                    <div>
+                        <div class="detail-group">
+                            <div class="detail-label">Schedule ID</div>
+                            <div class="detail-value" id="detailScheduleId">MNT-001</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Scheduled Date</div>
+                            <div class="detail-value" id="detailScheduledDate">2024-02-15</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Maintenance Type</div>
+                            <div class="detail-value">
+                                <span class="maintenance-type type-preventive" id="detailMaintenanceType">Preventive</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value">
+                                <span class="status status-scheduled" id="detailStatus">Scheduled</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Estimated Duration</div>
+                            <div class="detail-value" id="detailEstimatedDuration">2 hours</div>
+                        </div>
+                        <div class="asset-info-card">
+                            <div class="detail-label" style="color: var(--primary-color); margin-bottom: 10px;">Asset Information</div>
+                            <div class="detail-group">
+                                <div class="detail-label">Asset Name</div>
+                                <div class="detail-value" id="detailAssetName">Laptop Dell XPS 13</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Serial Number</div>
+                                <div class="detail-value" id="detailAssetSerial">SN-789456123</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Brand & Model</div>
+                                <div class="detail-value" id="detailAssetModel">Dell XPS 13 9310</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Last Maintenance</div>
+                                <div class="detail-value" id="detailLastMaintenance">2024-01-15</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="technician-info-card">
+                            <div class="detail-label" style="color: var(--primary-color); margin-bottom: 10px;">Assigned Technician</div>
+                            <div class="detail-group">
+                                <div class="detail-label">Name</div>
+                                <div class="detail-value" id="detailTechnicianName">Mike Johnson</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Specialization</div>
+                                <div class="detail-value" id="detailTechnicianSpecialty">Hardware Specialist</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Contact</div>
+                                <div class="detail-value" id="detailTechnicianContact">m.johnson@university.edu</div>
+                            </div>
+                        </div>
+                        <div class="maintenance-info-card">
+                            <div class="detail-label" style="color: var(--warning-color); margin-bottom: 10px;">Maintenance Information</div>
+                            <div class="progress-container">
+                                <div class="progress-header">
+                                    <span>Completion Progress</span>
+                                    <span id="progressPercentage">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Maintenance Notes</div>
+                                <div class="detail-value" id="detailMaintenanceNotes" style="background-color: #fff3cd; padding: 10px; border-radius: var(--border-radius);">Routine preventive maintenance. Check battery health, update software, clean internal components, and verify system performance.</div>
+                            </div>
+                        </div>
+                        <div class="checklist">
+                            <div class="detail-label">Maintenance Checklist</div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="detailCheck1">
+                                <label for="detailCheck1">Visual inspection for physical damage</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="detailCheck2">
+                                <label for="detailCheck2">Software updates and patches</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="detailCheck3">
+                                <label for="detailCheck3">Performance testing and benchmarking</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="detailCheck4">
+                                <label for="detailCheck4">Cleaning and dust removal</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="detailCheck5">
+                                <label for="detailCheck5">Battery health check</label>
+                            </div>
+                        </div>
+                        <div class="timeline">
+                            <h4 style="margin-bottom: 15px; color: var(--secondary-color);">Maintenance History</h4>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-10 08:00</div>
+                                    <div class="timeline-description">Maintenance task scheduled</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-12 14:30</div>
+                                    <div class="timeline-description">Assigned to Mike Johnson</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">2024-02-14 10:15</div>
+                                    <div class="timeline-description">Maintenance checklist prepared</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons" id="actionButtons">
+                            <!-- Action buttons will be populated based on status -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMaintenanceDetailsModal()">Close</button>
+                <button class="btn btn-primary" onclick="printMaintenanceReport()">Print Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample maintenance data
+        const maintenanceTasks = [
+            {
+                id: 1,
+                assetId: 1,
+                assetName: "Laptop Dell XPS 13",
+                assetSerial: "SN-789456123",
+                assetModel: "Dell XPS 13 9310",
+                lastMaintenance: "2024-01-15",
+                maintenanceType: "preventive",
+                scheduledDate: "2024-02-15",
+                technicianId: 1,
+                technicianName: "Mike Johnson",
+                technicianSpecialty: "Hardware Specialist",
+                technicianContact: "m.johnson@university.edu",
+                estimatedDuration: 2,
+                maintenanceNotes: "Routine preventive maintenance. Check battery health, update software, clean internal components, and verify system performance.",
+                status: "scheduled",
+                progress: 0
+            },
+            {
+                id: 2,
+                assetId: 2,
+                assetName: "Projector Epson EB-U05",
+                assetSerial: "SN-456123789",
+                assetModel: "Epson EB-U05",
+                lastMaintenance: "2024-01-20",
+                maintenanceType: "preventive",
+                scheduledDate: "2024-02-05",
+                technicianId: 2,
+                technicianName: "Sarah Chen",
+                technicianSpecialty: "Electronics Expert",
+                technicianContact: "s.chen@university.edu",
+                estimatedDuration: 1,
+                maintenanceNotes: "Lens cleaning, bulb life check, ventilation system inspection, and connectivity testing.",
+                status: "completed",
+                progress: 100
+            },
+            {
+                id: 3,
+                assetId: 5,
+                assetName: "Server Dell PowerEdge",
+                assetSerial: "SN-555888777",
+                assetModel: "Dell PowerEdge R740",
+                lastMaintenance: "2024-01-10",
+                maintenanceType: "predictive",
+                scheduledDate: "2024-02-12",
+                technicianId: 3,
+                technicianName: "David Kim",
+                technicianSpecialty: "Software & Systems",
+                technicianContact: "d.kim@university.edu",
+                estimatedDuration: 4,
+                maintenanceNotes: "Predictive maintenance based on system logs. Check RAID array health, update firmware, monitor temperature sensors.",
+                status: "in-progress",
+                progress: 60
+            },
+            {
+                id: 4,
+                assetId: 4,
+                assetName: "Monitor LG 27UL850",
+                assetSerial: "SN-987654321",
+                assetModel: "LG 27UL850-W",
+                lastMaintenance: "2023-12-15",
+                maintenanceType: "corrective",
+                scheduledDate: "2024-02-15",
+                technicianId: 4,
+                technicianName: "Lisa Wong",
+                technicianSpecialty: "General Maintenance",
+                technicianContact: "l.wong@university.edu",
+                estimatedDuration: 1,
+                maintenanceNotes: "Color calibration and dead pixel check. Reported color inconsistency issues.",
+                status: "overdue",
+                progress: 0
+            }
+        ];
+
+        // Initialize the maintenance table
+        function initializeMaintenanceTable() {
+            const tableBody = document.getElementById('maintenanceTableBody');
+            tableBody.innerHTML = '';
+            
+            maintenanceTasks.forEach(task => {
+                const row = document.createElement('tr');
+                
+                // Determine status and type classes
+                const statusClass = `status-${task.status.toLowerCase().replace(' ', '-')}`;
+                const typeClass = `type-${task.maintenanceType.toLowerCase()}`;
+                
+                row.innerHTML = `
+                    <td>MNT-${task.id.toString().padStart(3, '0')}</td>
+                    <td>${task.assetName}</td>
+                    <td><span class="maintenance-type ${typeClass}">${task.maintenanceType}</span></td>
+                    <td>${task.scheduledDate}</td>
+                    <td>${task.technicianName}</td>
+                    <td><span class="status ${statusClass}">${task.status}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="viewMaintenanceDetails(${task.id})">View</button>
+                        <button class="btn btn-warning btn-sm" onclick="editMaintenance(${task.id})">Edit</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Modal functions
+        function openNewMaintenanceModal() {
+            document.getElementById('newMaintenanceModal').style.display = 'flex';
+        }
+
+        function closeNewMaintenanceModal() {
+            document.getElementById('newMaintenanceModal').style.display = 'none';
+        }
+
+        function openMaintenanceDetailsModal() {
+            document.getElementById('maintenanceDetailsModal').style.display = 'flex';
+        }
+
+        function closeMaintenanceDetailsModal() {
+            document.getElementById('maintenanceDetailsModal').style.display = 'none';
+        }
+
+        // Maintenance management functions
+        function submitMaintenanceForm() {
+            // Form validation and submission logic would go here
+            alert('Maintenance scheduled successfully!');
+            closeNewMaintenanceModal();
+        }
+
+        function viewMaintenanceDetails(maintenanceId) {
+            const task = maintenanceTasks.find(t => t.id === maintenanceId);
+            if (task) {
+                document.getElementById('detailScheduleId').textContent = `MNT-${task.id.toString().padStart(3, '0')}`;
+                document.getElementById('detailScheduledDate').textContent = task.scheduledDate;
+                document.getElementById('detailMaintenanceType').textContent = task.maintenanceType;
+                document.getElementById('detailMaintenanceType').className = `maintenance-type type-${task.maintenanceType.toLowerCase()}`;
+                document.getElementById('detailStatus').textContent = task.status;
+                document.getElementById('detailStatus').className = `status status-${task.status.toLowerCase().replace(' ', '-')}`;
+                document.getElementById('detailEstimatedDuration').textContent = `${task.estimatedDuration} hours`;
+                document.getElementById('detailAssetName').textContent = task.assetName;
+                document.getElementById('detailAssetSerial').textContent = task.assetSerial;
+                document.getElementById('detailAssetModel').textContent = task.assetModel;
+                document.getElementById('detailLastMaintenance').textContent = task.lastMaintenance;
+                document.getElementById('detailTechnicianName').textContent = task.technicianName;
+                document.getElementById('detailTechnicianSpecialty').textContent = task.technicianSpecialty;
+                document.getElementById('detailTechnicianContact').textContent = task.technicianContact;
+                document.getElementById('detailMaintenanceNotes').textContent = task.maintenanceNotes;
+                document.getElementById('progressPercentage').textContent = `${task.progress}%`;
+                document.getElementById('progressFill').style.width = `${task.progress}%`;
+                
+                // Set action buttons based on status
+                const actionButtons = document.getElementById('actionButtons');
+                actionButtons.innerHTML = '';
+                
+                if (task.status === 'scheduled') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="startMaintenance(${task.id})">Start Maintenance</button>
+                        <button class="btn btn-warning" onclick="rescheduleMaintenance(${task.id})">Reschedule</button>
+                        <button class="btn btn-danger" onclick="cancelMaintenance(${task.id})">Cancel</button>
+                    `;
+                } else if (task.status === 'in-progress') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="completeMaintenance(${task.id})">Complete</button>
+                        <button class="btn btn-warning" onclick="updateProgress(${task.id})">Update Progress</button>
+                        <button class="btn btn-danger" onclick="pauseMaintenance(${task.id})">Pause</button>
+                    `;
+                } else if (task.status === 'overdue') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-success" onclick="startMaintenance(${task.id})">Start Now</button>
+                        <button class="btn btn-warning" onclick="rescheduleMaintenance(${task.id})">Reschedule</button>
+                        <button class="btn btn-danger" onclick="escalateMaintenance(${task.id})">Escalate</button>
+                    `;
+                }
+                
+                openMaintenanceDetailsModal();
+            }
+        }
+
+        function editMaintenance(maintenanceId) {
+            const task = maintenanceTasks.find(t => t.id === maintenanceId);
+            if (task) {
+                // Populate edit form with maintenance data
+                // This would open an edit modal similar to the add modal
+                alert(`Editing maintenance: MNT-${task.id.toString().padStart(3, '0')}`);
+            }
+        }
+
+        function filterByStatus(status) {
+            document.getElementById('statusFilter').value = status;
+            // Filter logic would be implemented here
+            alert(`Filtering by status: ${status || 'All'}`);
+        }
+
+        function filterByType(type) {
+            document.getElementById('typeFilter').value = type;
+            // Filter logic would be implemented here
+            alert(`Filtering by type: ${type || 'All'}`);
+        }
+
+        function viewMaintenanceReport() {
+            alert('Generating maintenance report...');
+            // Report generation logic would go here
+        }
+
+        // Maintenance action functions
+        function startMaintenance(maintenanceId) {
+            if (confirm('Are you sure you want to start this maintenance task?')) {
+                // Start maintenance logic would go here
+                alert('Maintenance task started!');
+                closeMaintenanceDetailsModal();
+            }
+        }
+
+        function rescheduleMaintenance(maintenanceId) {
+            const newDate = prompt('Enter new scheduled date (YYYY-MM-DD):');
+            if (newDate) {
+                // Reschedule maintenance logic would go here
+                alert(`Maintenance rescheduled to ${newDate}`);
+            }
+        }
+
+        function cancelMaintenance(maintenanceId) {
+            if (confirm('Are you sure you want to cancel this maintenance task?')) {
+                // Cancel maintenance logic would go here
+                alert('Maintenance task cancelled!');
+                closeMaintenanceDetailsModal();
+            }
+        }
+
+        function completeMaintenance(maintenanceId) {
+            if (confirm('Are you sure you want to mark this maintenance as complete?')) {
+                // Complete maintenance logic would go here
+                alert('Maintenance completed successfully!');
+                closeMaintenanceDetailsModal();
+            }
+        }
+
+        function updateProgress(maintenanceId) {
+            const progress = prompt('Enter new progress percentage (0-100):');
+            if (progress && progress >= 0 && progress <= 100) {
+                // Update progress logic would go here
+                alert(`Progress updated to ${progress}%`);
+            }
+        }
+
+        function pauseMaintenance(maintenanceId) {
+            if (confirm('Are you sure you want to pause this maintenance?')) {
+                // Pause maintenance logic would go here
+                alert('Maintenance paused!');
+                closeMaintenanceDetailsModal();
+            }
+        }
+
+        function escalateMaintenance(maintenanceId) {
+            if (confirm('Are you sure you want to escalate this overdue maintenance?')) {
+                // Escalate maintenance logic would go here
+                alert('Maintenance escalated to supervisor!');
+            }
+        }
+
+        function printMaintenanceReport() {
+            alert('Printing maintenance report...');
+            // Print functionality would go here
+        }
+
+        // Form submission handler
+        document.getElementById('maintenanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Form processing logic would go here
+            alert('Maintenance scheduled successfully!');
+            this.reset();
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // Filter maintenance tasks based on search term
+            // This would be implemented with actual filtering logic
+        });
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const newModal = document.getElementById('newMaintenanceModal');
+            const detailsModal = document.getElementById('maintenanceDetailsModal');
+            
+            if (event.target === newModal) {
+                closeNewMaintenanceModal();
+            }
+            if (event.target === detailsModal) {
+                closeMaintenanceDetailsModal();
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMaintenanceTable();
+        });
+    </script>
+</body>
+</html>
