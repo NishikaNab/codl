@@ -1,5 +1,4 @@
 <?php
-session_start();
 include('app/config/database.php');
 include('app/models/User.php');
 include('app/models/Asset.php');
@@ -7,11 +6,24 @@ include('app/models/Damage.php');
 include('includes/header.php');
 
 $users = User::all();
+$admins = User::getStaffByRole('admin');
+$staffs = User::getStaffByRole('staff');
 $assests = Asset::all();
 $damage_levels = Damage::getDamageLevel();
 ?>
  
 <!-- Dashboard Cards -->
+<?php foreach($admins as $admin) {
+    echo 'admin: ' . $admin['name'];
+} ?>
+
+<?php foreach($staffs as $staff) {
+    echo 'staff: ' . $staff['name'];
+} ?>
+
+<?php foreach($staffs as $staff) {
+    echo 'staff: ' . $staff['name'];
+} ?>
 <div class="dashboard-cards">
     <div class="card" onclick="filterByStatus('')">
         <div class="card-header">

@@ -9,6 +9,13 @@ class User
                     ->fetch_all(MYSQLI_ASSOC);
     }
 
+    public static function getStaffByRole($role)
+    {
+        global $conn;
+        return $conn->query("SELECT * FROM users WHERE role = '$role'")
+            ->fetch_all(MYSQLI_ASSOC);
+    }
+
     public static function find($id)
     {
         global $conn;
